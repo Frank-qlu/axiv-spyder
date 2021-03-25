@@ -114,23 +114,29 @@ class paper_crwaler:
             response = http.request('GET', self.papers[i].pdf, headers=self.header)
             self.test()
             filename=self.papers[i].title
-            with open(filename.strip("\n") + '.pdf', 'wb') as file:
-                file.write(response.data)
-                file.close()
-                response.release_conn()
-            with pdfplumber.open(filename.strip("\n") + '.pdf') as pdf:
-                for page in pdf.pages:
-                    content=page.extract_text()
-                    regular = re.compile(r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}\b")
-                    if len(re.findall(regular, content)):
-                        # print(re.findall(regular, content))
-                        li.append(re.findall(regular, content))
-                        # Open File
-                        # csvFile2 = open('csvFile2.csv', 'w', newline='')  # 设置newline，否则两行之间会空一行
-                        # writer = csv.writer(csvFile2)
-                        # for i in li:
-                        #     writer.writerow(i)
-                        # csvFile2.close()
+            try:
+                with open(filename.strip("\n") + '.pdf', 'wb') as file:
+                    file.write(response.data)
+                    file.close()
+                    response.release_conn()
+                try:
+                    with pdfplumber.open(filename.strip("\n") + '.pdf') as pdf:
+                        for page in pdf.pages:
+                            content = page.extract_text()
+                            regular = re.compile(r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}\b")
+                            if len(re.findall(regular, content)):
+                                # print(re.findall(regular, content))
+                                li.append(re.findall(regular, content))
+                                # Open File
+                                # csvFile2 = open('csvFile2.csv', 'w', newline='')  # 设置newline，否则两行之间会空一行
+                                # writer = csv.writer(csvFile2)
+                                # for i in li:
+                                #     writer.writerow(i)
+                                # csvFile2.close()
+                except:
+                    pass
+            except:
+                pass
         print(li)
         output = open('email.csv', 'w', newline='')
         writer = csv.writer(output)
@@ -155,4 +161,4 @@ def main(count):
     print(time.time() - t_start)
 
 if __name__ == '__main__':
-    main(10)
+    main(5)
